@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Narudžbe</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #2c3e50; color: white; }
+    </style>
+</head>
+<body>
+<h1>Pregled narudžbi (Trgovac u BiH)</h1>
+<p>Ovaj pregled simulira uvid trgovca u uplaćene narudžbe preko kartičnog sistema.</p>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Kupac</th>
+        <th>Email</th>
+        <th>Proizvod</th>
+        <th>Iznos (KM)</th>
+        <th>Status</th>
+    </tr>
+    <tr th:each="ord : ${orders}">
+        <td th:text="${ord.id}">1</td>
+        <td th:text="${ord.customerName}">Ime</td>
+        <td th:text="${ord.customerEmail}">Email</td>
+        <td th:text="${ord.productName}">Proizvod</td>
+        <td th:text="${ord.amount}">0.00</td>
+        <td style="font-weight: bold; color: green;" th:text="${ord.status}">STATUS</td>
+    </tr>
+</table>
+<br>
+<a href="/">Nazad na prodavnicu</a>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout - Podaci o kupcu</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f9f9f9; }
+        .form-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 400px; }
+        input { width: 100%; padding: 8px; margin: 10px 0 20px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;}
+        .btn { background: #2980b9; color: white; padding: 10px 15px; border: none; border-radius: 4px; width: 100%; cursor: pointer; }
+    </style>
+</head>
+<body>
+<div class="form-box">
+    <h2>Završetak narudžbe</h2>
+    <p>Proizvod: <b th:text="${productName}"></b></p>
+    <p>Cijena: <b th:text="${price}"></b> KM</p>
+
+    <form action="/process-payment" method="POST">
+        <input type="hidden" name="productName" th:value="${productName}" />
+        <input type="hidden" name="price" th:value="${price}" />
+
+        <label>Vaše ime i prezime:</label>
+        <input type="text" name="customerName" required placeholder="npr. Amina Memić" />
+
+        <label>Vaš Email:</label>
+        <input type="email" name="customerEmail" required placeholder="amina@unze.ba" />
+
+        <button type="submit" class="btn">Nastavi na testno plaćanje karticom</button>
+    </form>
+</div>
+</body>
+</html>

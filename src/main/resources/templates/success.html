@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Uspješno plaćanje</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; text-align: center; background-color: #f9f9f9; }
+        .success-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: inline-block; }
+        h1 { color: #27ae60; }
+        a { color: #2980b9; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="success-box">
+    <h1>Uspješna transakcija!</h1>
+    <p>Hvala vam, <span th:text="${order.customerName}"></span>.</ vašu narudžbu.</p>
+    <p>Proizvod: <b th:text="${order.productName}"></b></p>
+    <p>Iznos: <b th:text="${order.amount}"></b> KM</p>
+    <p>Status narudžbe u bazi: <b style="color: green;" th:text="${order.status}"></b></p>
+    <br>
+    <a href="/">Nazad na početnu stranicu</a> |
+    <a href="/admin/orders">Pregled svih narudžbi</a>
+</div>
+</body>
+</html>
