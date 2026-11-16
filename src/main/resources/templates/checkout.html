@@ -1,33 +1,49 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="bs" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Checkout - Podaci o kupcu</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f9f9f9; }
-        .form-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 400px; }
-        input { width: 100%; padding: 8px; margin: 10px 0 20px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;}
-        .btn { background: #2980b9; color: white; padding: 10px 15px; border: none; border-radius: 4px; width: 100%; cursor: pointer; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style th:replace="~{fragments/style :: css}"></style>
+    <title>Završetak narudžbe - BHPay</title>
 </head>
 <body>
-<div class="form-box">
-    <h2>Završetak narudžbe</h2>
-    <p>Proizvod: <b th:text="${productName}"></b></p>
-    <p>Cijena: <b th:text="${price}"></b> KM</p>
+<header class="topbar"><div class="wrap">
+    <a class="logo" href="/"><i></i>BHPay</a>
+    <nav class="nav"><a href="/">Prodavnica</a><a href="/admin/orders">Trgovac</a></nav>
+</div></header>
 
-    <form action="/process-payment" method="POST">
-        <input type="hidden" name="productName" th:value="${productName}" />
-        <input type="hidden" name="price" th:value="${price}" />
+<main class="wrap page">
+    <h1>Završetak narudžbe</h1>
+    <p class="lead">Provjerite narudžbu i unesite podatke za potvrdu.</p>
 
-        <label>Vaše ime i prezime:</label>
-        <input type="text" name="customerName" required placeholder="npr. Amina Memić" />
+    <div class="checkout">
+        <section class="panel summary" th:attr="data-cat=${product.category}">
+            <div class="tile-top"><span th:text="${product.category}">Kategorija</span></div>
+            <div class="inner">
+                <h2 th:text="${product.name}">Proizvod</h2>
+                <div class="line"><span>Prodaje</span><span th:text="${product.merchant.name}">Trgovac</span></div>
+                <div class="line"><span>Grad</span><span th:text="${product.merchant.city}">Grad</span></div>
+                <div class="line"><span>Za platiti</span><span class="total"><span th:text="${product.price}">0.00</span> KM</span></div>
+            </div>
+        </section>
 
-        <label>Vaš Email:</label>
-        <input type="email" name="customerEmail" required placeholder="amina@unze.ba" />
+        <section class="panel">
+            <form action="/process-payment" method="POST">
+                <input type="hidden" name="productId" th:value="${product.id}" />
 
-        <button type="submit" class="btn">Nastavi na testno plaćanje karticom</button>
-    </form>
-</div>
+                <label for="customerName">Ime i prezime</label>
+                <input id="customerName" type="text" name="customerName" required placeholder="npr. Amina Memić" />
+
+                <label for="customerEmail">Email</label>
+                <input id="customerEmail" type="email" name="customerEmail" required placeholder="amina@unze.ba" />
+
+                <button type="submit" class="btn block">Plati karticom</button>
+                <p class="note">Ovo je simulacija plaćanja. Prava kartica se ne naplaćuje.</p>
+            </form>
+        </section>
+    </div>
+</main>
 </body>
 </html>
