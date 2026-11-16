@@ -1,25 +1,40 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="bs" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Uspješno plaćanje</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; text-align: center; background-color: #f9f9f9; }
-        .success-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: inline-block; }
-        h1 { color: #27ae60; }
-        a { color: #2980b9; text-decoration: none; font-weight: bold; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style th:replace="~{fragments/style :: css}"></style>
+    <title>Plaćanje uspješno - BHPay</title>
 </head>
 <body>
-<div class="success-box">
-    <h1>Uspješna transakcija!</h1>
-    <p>Hvala vam, <span th:text="${order.customerName}"></span>.</ vašu narudžbu.</p>
-    <p>Proizvod: <b th:text="${order.productName}"></b></p>
-    <p>Iznos: <b th:text="${order.amount}"></b> KM</p>
-    <p>Status narudžbe u bazi: <b style="color: green;" th:text="${order.status}"></b></p>
-    <br>
-    <a href="/">Nazad na početnu stranicu</a> |
-    <a href="/admin/orders">Pregled svih narudžbi</a>
-</div>
+<header class="topbar"><div class="wrap">
+    <a class="logo" href="/"><i></i>BHPay</a>
+    <nav class="nav"><a href="/">Prodavnica</a><a href="/admin/orders">Trgovac</a></nav>
+</div></header>
+
+<main class="wrap page">
+    <div class="ticket">
+        <div class="ticket-head">
+            <svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="32" cy="32" r="28"/><path d="M20 33l8 8 16-17"/></svg>
+            <h1>Plaćanje uspješno</h1>
+            <p>Hvala, <span th:text="${order.customerName}">Kupac</span>. Narudžba je primljena.</p>
+        </div>
+        <div class="ticket-body">
+            <dl>
+                <div class="r"><dt>Narudžba</dt><dd>#<span th:text="${order.id}">1</span></dd></div>
+                <div class="r"><dt>Proizvod</dt><dd th:text="${order.productName}">Proizvod</dd></div>
+                <div class="r"><dt>Trgovac</dt><dd th:text="${order.merchant.name}">Trgovac</dd></div>
+                <div class="r"><dt>Iznos</dt><dd><span th:text="${order.amount}">0.00</span> KM</dd></div>
+                <div class="r"><dt>Status</dt><dd><span class="pill" th:text="${order.status}">PLACENO</span></dd></div>
+            </dl>
+            <div class="actions">
+                <a class="btn" href="/">Nastavi kupovinu</a>
+                <a class="btn ghost" href="/admin/orders">Sve narudžbe</a>
+            </div>
+        </div>
+    </div>
+</main>
 </body>
 </html>

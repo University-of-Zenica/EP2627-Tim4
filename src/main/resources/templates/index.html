@@ -1,27 +1,77 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="bs" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>E-Shop BiH - Kartično Plaćanje</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f9f9f9; }
-        .product-card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 400px; }
-        h1 { color: #2c3e50; }
-        .btn { background: #27ae60; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; display: inline-block; margin-top: 10px;}
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style th:replace="~{fragments/style :: css}"></style>
+    <title>BHPay - Domaće, plaćeno karticom</title>
 </head>
 <body>
-<h1>BH Web Shop - Testiranje Kartičnog Plaćanja</h1>
-<p>Izaberite proizvod i testirajte proces online naplate:</p>
+<header class="topbar"><div class="wrap">
+    <a class="logo" href="/"><i></i>BHPay</a>
+    <nav class="nav"><a href="/" aria-current="page">Prodavnica</a><a href="/admin/orders">Trgovac</a></nav>
+</div></header>
 
-<div th:each="product : ${products}" class="product-card">
-    <h3 th:text="${product.name}">Naziv proizvoda</h3>
-    <p>Cijena: <span th:text="${product.price}">0.00</span> KM</p>
-    <!-- Link šalje naziv proizvoda i cijenu na /checkout -->
-    <a th:href="@{/checkout(productName=${product.name}, price=${product.price})}" class="btn">Kupi karticom</a>
-</div>
+<section class="hero">
+    <div class="wrap">
+        <div>
+            <h1>Domaće, plaćeno karticom.</h1>
+            <p>Kafa iz Sarajeva, med sa Igmana, ajvar iz Une. Kupujte od bh. trgovaca i platite sigurno online.</p>
+            <a class="btn yellow" href="#ponuda">Pogledaj ponudu</a>
+        </div>
+        <div class="pay-card" aria-hidden="true">
+            <div class="chip-ic"></div>
+            <div class="num">•••• •••• •••• 4821</div>
+            <div class="row"><span>Amina Memić</span><span class="brand">BHPay</span></div>
+        </div>
+    </div>
+</section>
 
-<br>
-<a href="/admin/orders" style="color: #2980b9; font-weight: bold;">[Admin] Pregled svih narudžbi u bazi</a>
+<main class="wrap shop" id="ponuda">
+    <div class="shop-head">
+        <h2>Ponuda trgovaca</h2>
+        <div class="chips" role="group" aria-label="Kategorije">
+            <button class="chip" type="button" data-filter="all" aria-pressed="true">Sve</button>
+            <button class="chip" type="button" data-filter="Kafa" aria-pressed="false">Kafa</button>
+            <button class="chip" type="button" data-filter="Med" aria-pressed="false">Med</button>
+            <button class="chip" type="button" data-filter="Čaj" aria-pressed="false">Čaj</button>
+            <button class="chip" type="button" data-filter="Specijaliteti" aria-pressed="false">Specijaliteti</button>
+            <button class="chip" type="button" data-filter="Slatkiši" aria-pressed="false">Slatkiši</button>
+        </div>
+    </div>
+
+    <div class="grid">
+        <article class="tile" th:each="product : ${products}" th:attr="data-cat=${product.category}">
+            <div class="tile-top"><span th:text="${product.category}">Kategorija</span></div>
+            <div class="tile-body">
+                <h3 th:text="${product.name}">Naziv proizvoda</h3>
+                <div class="merchant"><span th:text="${product.merchant.name}">Trgovac</span>, <span th:text="${product.merchant.city}">Grad</span></div>
+                <p class="desc" th:text="${product.description}">Opis</p>
+                <div class="buy">
+                    <div class="price"><span th:text="${product.price}">0.00</span><small>KM</small></div>
+                    <a class="btn" th:href="@{/checkout(productId=${product.id})}">Kupi karticom</a>
+                </div>
+            </div>
+        </article>
+    </div>
+</main>
+
+<p class="foot">Testno okruženje. Ne unosite prave podatke kartice.</p>
+
+<script>
+    document.querySelectorAll('.chip').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+            var f = chip.dataset.filter;
+            document.querySelectorAll('.chip').forEach(function (c) {
+                c.setAttribute('aria-pressed', c === chip ? 'true' : 'false');
+            });
+            document.querySelectorAll('.tile').forEach(function (t) {
+                t.hidden = (f === 'all') ? false : (t.dataset.cat !== f);
+            });
+        });
+    });
+</script>
 </body>
 </html>

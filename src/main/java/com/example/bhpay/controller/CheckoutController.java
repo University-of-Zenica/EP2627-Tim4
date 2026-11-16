@@ -1,63 +1,57 @@
 package com.example.bhpay.controller;
 
 import com.example.bhpay.model.Order;
-import com.example.bhpay.model.Product; // Obavezno uvezi Product model
+import com.example.bhpay.model.Product;
 import com.example.bhpay.service.OrderService;
+import com.example.bhpay.service.ProductService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays; // Za listu proizvoda
-import java.util.List;
 
 @Controller
 public class CheckoutController {
 
     private final OrderService orderService;
+    private final ProductService productService;
 
-    public CheckoutController(OrderService orderService) {
+    public CheckoutController(OrderService orderService, ProductService productService) {
         this.orderService = orderService;
+        this.productService = productService;
     }
 
-    // 1. POČETNA STRANICA SA PROIZVODIMA
+    // 1. POČETNA STRANICA - proizvodi iz baze
     @GetMapping("/")
     public String home(Model model) {
-        List<Product> products = Arrays.asList(
-                new Product(1L, "Domaća Bosanska Kafa (500g)", 12.50),
-                new Product(2L, "Planinski Med (1kg)", 25.00),
-                new Product(3L, "Domaći Čaj od Nane (100g)", 5.00)
-        );
-
-        model.addAttribute("products", products);
-        return "index"; // Traži index.html
+        model.addAttribute("products", productService.getAllProducts());
+        return "index";
     }
 
-    // 2. PRIKAZ FORME ZA UNOS PODATAKA
+    // 2. FORMA ZA UNOS PODATAKA - šalje se samo productId, cijena se čita iz baze
     @GetMapping("/checkout")
-    public String checkoutPage(@RequestParam String productName, @RequestParam double price, Model model) {
-        model.addAttribute("productName", productName);
-        model.addAttribute("price", price);
+    public String checkoutPage(@RequestParam Long productId, Model model) {
+        Product product = productService.getProductById(productId);
+        if (product == null) {
+            return "redirect:/";
+        }
+        model.addAttribute("product", product);
         return "checkout";
     }
 
-    // 3. OBRADA UNESENIH PODATAKA I KREIRANJE NARUDŽBE
+    // 3. KREIRANJE NARUDŽBE
     @PostMapping("/process-payment")
-    public String processPayment(@RequestParam String productName,
-                                 @RequestParam double price,
+    public String processPayment(@RequestParam Long productId,
                                  @RequestParam String customerName,
                                  @RequestParam String customerEmail) {
-
-        Order savedOrder = orderService.createOrder(productName, price, customerName, customerEmail);
+        Order savedOrder = orderService.createOrder(productId, customerName, customerEmail);
         return "redirect:/payment-success/" + savedOrder.getId();
     }
 
     // 4. USPJEŠNO PLAĆANJE
+    // TODO (Selma): ovdje će doći PaymentTransaction; status se ne smije mijenjati običnim GET-om
     @GetMapping("/payment-success/{id}")
     public String paymentSuccess(@PathVariable Long id, Model model) {
         orderService.updateOrderStatus(id, "PLACENO");
-
-        Order order = orderService.getOrderById(id);
-        model.addAttribute("order", order);
+        model.addAttribute("order", orderService.getOrderById(id));
         return "success";
     }
 
