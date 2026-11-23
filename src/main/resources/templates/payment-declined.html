@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="bs" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style th:replace="~{fragments/style :: css}"></style>
+    <style>
+        .ticket-head.err { background: #B83A2E; }
+        .pill.err { background: #FEE2E2; color: #991B1B; }
+    </style>
+    <title>Plaćanje odbijeno - BHPay</title>
+</head>
+<body>
+<header class="topbar"><div class="wrap">
+    <a class="logo" href="/"><i></i>BHPay</a>
+    <nav class="nav"><a href="/">Prodavnica</a><a href="/admin/orders">Trgovac</a></nav>
+</div></header>
+
+<main class="wrap page">
+    <div class="ticket">
+        <div class="ticket-head err">
+            <svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="32" cy="32" r="28"/>
+                <path d="M22 22l20 20M42 22L22 42"/>
+            </svg>
+            <h1>Plaćanje odbijeno</h1>
+            <p th:text="${tx.bankResponseMessage}">Banka je odbila transakciju.</p>
+        </div>
+        <div class="ticket-body">
+            <dl>
+                <div class="r"><dt>Narudžba</dt><dd>#<span th:text="${order.id}">1</span></dd></div>
+                <div class="r"><dt>Referenca</dt><dd th:text="${tx.transactionReference}">BHP-0000</dd></div>
+                <div class="r"><dt>Proizvod</dt><dd th:text="${order.productName}">Proizvod</dd></div>
+                <div class="r" th:if="${tx.cardDetails != null}"><dt>Kartica</dt><dd th:text="${tx.cardDetails.maskedCardNumber}">****</dd></div>
+                <div class="r"><dt>Iznos</dt><dd><span th:text="${tx.amountBam}">0.00</span> KM</dd></div>
+                <div class="r"><dt>Status</dt><dd><span class="pill err" th:text="${tx.status}">DECLINED</span></dd></div>
+            </dl>
+            <div class="actions">
+                <a class="btn" th:href="@{/gateway/pay/{id}(id=${order.id})}">Pokušaj ponovo</a>
+                <a class="btn ghost" href="/">Nazad u prodavnicu</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

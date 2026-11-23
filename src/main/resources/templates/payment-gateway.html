@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="bs" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style th:replace="~{fragments/style :: css}"></style>
+    <style>
+        /* Prilagodba kartice i password polja za formu plaćanja */
+        .pay-card.flat {
+            transform: none;
+            animation: none;
+            margin: 0 auto 22px;
+            max-width: 100%;
+            box-shadow: 0 18px 34px -18px rgba(15, 40, 112, .45);
+        }
+        input[type=password] {
+            width: 100%;
+            font: inherit;
+            padding: 14px;
+            border: 2px solid var(--line);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            background: var(--white);
+        }
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .alert-err {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FCA5A5;
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .test-box {
+            margin-top: 18px;
+            padding: 14px 16px;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+        .test-box strong { color: var(--ink); }
+        .test-box code {
+            background: var(--white);
+            border: 1px solid var(--line);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-weight: 700;
+            color: var(--blue-deep);
+        }
+    </style>
+    <title>Sigurno kartično plaćanje - BHPay</title>
+</head>
+<body>
+<header class="topbar"><div class="wrap">
+    <a class="logo" href="/"><i></i>BHPay</a>
+    <nav class="nav"><a href="/">Prodavnica</a><a href="/admin/orders">Trgovac</a></nav>
+</div></header>
+
+<main class="wrap page">
+    <h1>Kartično plaćanje</h1>
+    <p class="lead">Unesite podatke platne kartice za realizaciju narudžbe #<span th:text="${order.id}">1</span>.</p>
+
+    <div class="checkout">
+        <section class="panel summary" th:attr="data-cat=${order.product.category}">
+            <div class="tile-top"><span th:text="${order.product.category}">Kategorija</span></div>
+            <div class="inner">
+                <h2 th:text="${order.productName}">Proizvod</h2>
+                <div class="line"><span>Trgovac</span><span th:text="${order.merchant.name}">Trgovac</span></div>
+                <div class="line"><span>Kupac</span><span th:text="${order.customerName}">Kupac</span></div>
+                <div class="line"><span>Referenca</span><span th:text="${tx.transactionReference}">BHP-0000</span></div>
+                <div class="line"><span>Iznos (EUR)</span><span><span th:text="${tx.amountEur}">0.00</span> EUR</span></div>
+                <div class="line"><span>Za platiti</span><span class="total"><span th:text="${tx.amountBam}">0.00</span> KM</span></div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div th:if="${error}" class="alert-err" th:text="${error}">Poruka o grešci</div>
+
+            <div class="pay-card flat" aria-hidden="true">
+                <div class="chip-ic"></div>
+                <div class="num" id="previewNum">•••• •••• •••• ••••</div>
+                <div class="row">
+                    <span id="previewName" th:text="${#strings.toUpperCase(order.customerName)}">IME I PREZIME</span>
+                    <span class="brand" id="previewBrand">BHPay</span>
+                </div>
+            </div>
+
+            <form action="/gateway/submit-card" method="POST">
+                <input type="hidden" name="txRef" th:value="${tx.transactionReference}" />
+
+                <label for="cardHolderName">Ime i prezime na kartici</label>
+                <input id="cardHolderName" type="text" name="cardHolderName" required th:value="${order.customerName}" />
+
+                <label for="cardNumber">Broj kartice</label>
+                <input id="cardNumber" type="text" name="cardNumber" maxlength="19" required placeholder="4532 0151 1283 0366" autocomplete="off" />
+
+                <div class="row-2">
+                    <div>
+                        <label for="expiryDate">Datum isteka (MM/YY)</label>
+                        <input id="expiryDate" type="text" name="expiryDate" maxlength="5" required placeholder="12/28" />
+                    </div>
+                    <div>
+                        <label for="cvv">CVV kod</label>
+                        <input id="cvv" type="password" name="cvv" maxlength="4" required placeholder="123" />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn block">Potvrdi plaćanje (<span th:text="${tx.amountBam}">0.00</span> KM)</button>
+                <p class="note">Podaci kartice se tokenizuju u skladu sa PCI-DSS standardom.</p>
+            </form>
+
+            <div class="test-box">
+                <strong>Testne kartice (simulacija banke):</strong><br>
+                • Odobreno (Visa): <code>4532 0151 1283 0366</code><br>
+                • Odobreno (Mastercard): <code>5425 2334 3010 9903</code><br>
+                • Odbijeno (nema sredstava): <code>4532 0151 1283 0002</code><br>
+                • Odbijeno (blokirana kartica): <code>4532 0151 1283 9997</code>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script>
+    const numInput = document.getElementById('cardNumber');
+    const nameInput = document.getElementById('cardHolderName');
+    const expInput = document.getElementById('expiryDate');
+    const previewNum = document.getElementById('previewNum');
+    const previewName = document.getElementById('previewName');
+    const previewBrand = document.getElementById('previewBrand');
+
+    numInput.addEventListener('input', function (e) {
+        let v = e.target.value.replace(/\D/g, '').substring(0, 16);
+        e.target.value = v.replace(/(.{4})/g, '$1 ').trim();
+        previewNum.textContent = e.target.value || '•••• •••• •••• ••••';
+        if (v.startsWith('4')) previewBrand.textContent = 'VISA';
+        else if (/^5[1-5]/.test(v) || /^2[2-7]/.test(v)) previewBrand.textContent = 'MASTERCARD';
+        else previewBrand.textContent = 'BHPay';
+    });
+
+    nameInput.addEventListener('input', function (e) {
+        previewName.textContent = e.target.value.toUpperCase() || 'IME I PREZIME';
+    });
+
+    expInput.addEventListener('input', function (e) {
+        let v = e.target.value.replace(/\D/g, '').substring(0, 4);
+        if (v.length >= 3) v = v.substring(0, 2) + '/' + v.substring(2);
+        e.target.value = v;
+    });
+</script>
+</body>
+</html>

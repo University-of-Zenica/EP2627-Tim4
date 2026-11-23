@@ -24,9 +24,21 @@
         <div class="ticket-body">
             <dl>
                 <div class="r"><dt>Narudžba</dt><dd>#<span th:text="${order.id}">1</span></dd></div>
+                <div class="r" th:if="${tx != null}"><dt>Referenca plaćanja</dt><dd th:text="${tx.transactionReference}">BHP-0000</dd></div>
                 <div class="r"><dt>Proizvod</dt><dd th:text="${order.productName}">Proizvod</dd></div>
                 <div class="r"><dt>Trgovac</dt><dd th:text="${order.merchant.name}">Trgovac</dd></div>
-                <div class="r"><dt>Iznos</dt><dd><span th:text="${order.amount}">0.00</span> KM</dd></div>
+                <div class="r" th:if="${tx != null and tx.cardDetails != null}">
+                    <dt>Kartica</dt>
+                    <dd><span th:text="${tx.cardDetails.cardBrand}">VISA</span> (<span th:text="${tx.cardDetails.maskedCardNumber}">****</span>)</dd>
+                </div>
+                <div class="r" th:if="${tx != null}">
+                    <dt>3D Secure</dt>
+                    <dd th:text="${tx.threeDSecureVerified} ? 'Verifikovano (OTP)' : 'Standardna provjera'">Standardna</dd>
+                </div>
+                <div class="r">
+                    <dt>Iznos</dt>
+                    <dd><span th:text="${order.amount}">0.00</span> KM <span th:if="${tx != null}">(<span th:text="${tx.amountEur}">0.00</span> EUR)</span></dd>
+                </div>
                 <div class="r"><dt>Status</dt><dd><span class="pill" th:text="${order.status}">PLACENO</span></dd></div>
             </dl>
             <div class="actions">

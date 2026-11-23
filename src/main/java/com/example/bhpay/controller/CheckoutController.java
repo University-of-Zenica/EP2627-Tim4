@@ -1,7 +1,9 @@
 package com.example.bhpay.controller;
 
 import com.example.bhpay.model.Order;
+import com.example.bhpay.model.PaymentTransaction;
 import com.example.bhpay.model.Product;
+import com.example.bhpay.repository.PaymentTransactionRepository;
 import com.example.bhpay.service.OrderService;
 import com.example.bhpay.service.ProductService;
 import org.springframework.stereotype.Controller;
@@ -13,20 +15,22 @@ public class CheckoutController {
 
     private final OrderService orderService;
     private final ProductService productService;
+    private final PaymentTransactionRepository transactionRepository;
 
-    public CheckoutController(OrderService orderService, ProductService productService) {
+    public CheckoutController(OrderService orderService,
+                              ProductService productService,
+                              PaymentTransactionRepository transactionRepository) {
         this.orderService = orderService;
         this.productService = productService;
+        this.transactionRepository = transactionRepository;
     }
 
-    // 1. POČETNA STRANICA - proizvodi iz baze
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("products", productService.getAllProducts());
         return "index";
     }
 
-    // 2. FORMA ZA UNOS PODATAKA - šalje se samo productId, cijena se čita iz baze
     @GetMapping("/checkout")
     public String checkoutPage(@RequestParam Long productId, Model model) {
         Product product = productService.getProductById(productId);
@@ -37,25 +41,27 @@ public class CheckoutController {
         return "checkout";
     }
 
-    // 3. KREIRANJE NARUDŽBE
+
     @PostMapping("/process-payment")
     public String processPayment(@RequestParam Long productId,
                                  @RequestParam String customerName,
                                  @RequestParam String customerEmail) {
         Order savedOrder = orderService.createOrder(productId, customerName, customerEmail);
-        return "redirect:/payment-success/" + savedOrder.getId();
+        return "redirect:/gateway/pay/" + savedOrder.getId();
     }
 
-    // 4. USPJEŠNO PLAĆANJE
-    // TODO (Selma): ovdje će doći PaymentTransaction; status se ne smije mijenjati običnim GET-om
     @GetMapping("/payment-success/{id}")
     public String paymentSuccess(@PathVariable Long id, Model model) {
-        orderService.updateOrderStatus(id, "PLACENO");
-        model.addAttribute("order", orderService.getOrderById(id));
+        Order order = orderService.getOrderById(id);
+        if (order == null || !"PLACENO".equals(order.getStatus())) {
+            return "redirect:/gateway/pay/" + id;
+        }
+        PaymentTransaction tx = transactionRepository.findByOrderId(id).orElse(null);
+        model.addAttribute("order", order);
+        model.addAttribute("tx", tx);
         return "success";
     }
 
-    // 5. ADMIN PREGLED SVIH NARUDŽBI
     @GetMapping("/admin/orders")
     public String adminOrders(Model model) {
         model.addAttribute("orders", orderService.getAllOrders());

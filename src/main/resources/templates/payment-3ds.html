@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="bs" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style th:replace="~{fragments/style :: css}"></style>
+    <style>
+        .ticket-head.sec { background: var(--blue); }
+        .alert-err {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FCA5A5;
+            padding: 12px 14px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .otp-field {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 0.35em;
+        }
+    </style>
+    <title>3D Secure provjera - BHPay</title>
+</head>
+<body>
+<header class="topbar"><div class="wrap">
+    <a class="logo" href="/"><i></i>BHPay</a>
+    <nav class="nav"><a href="/">Prodavnica</a><a href="/admin/orders">Trgovac</a></nav>
+</div></header>
+
+<main class="wrap page">
+    <div class="ticket">
+        <div class="ticket-head sec">
+            <svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M32 6L12 15v16c0 13.5 8.5 26 20 29 11.5-3 20-15.5 20-29V15L32 6z"/>
+                <path d="M23 32l6 6 12-12"/>
+            </svg>
+            <h1>3D Secure provjera</h1>
+            <p>Transakcija prelazi 15.00 KM — potrebna je dodatna potvrda identiteta.</p>
+        </div>
+        <div class="ticket-body">
+            <div th:if="${error}" class="alert-err" th:text="${error}">Neispravan OTP kod</div>
+
+            <dl>
+                <div class="r"><dt>Trgovac</dt><dd th:text="${order.merchant.name}">Trgovac</dd></div>
+                <div class="r"><dt>Referenca</dt><dd th:text="${tx.transactionReference}">BHP-0000</dd></div>
+                <div class="r"><dt>Kartica</dt><dd th:text="${tx.cardDetails.maskedCardNumber}">**** 0366</dd></div>
+                <div class="r"><dt>Iznos</dt><dd><span th:text="${tx.amountBam}">0.00</span> KM</dd></div>
+            </dl>
+
+            <form action="/gateway/3ds/verify" method="POST" style="margin-top: 20px;">
+                <input type="hidden" name="txRef" th:value="${tx.transactionReference}" />
+
+                <label for="otpCode">Jednokratni SMS kod (testni kod: 123456)</label>
+                <input id="otpCode" class="otp-field" type="text" name="otpCode" maxlength="6" required placeholder="123456" autocomplete="off" />
+
+                <button type="submit" class="btn block">Potvrdi transakciju</button>
+                <p class="note">Kod je poslan na broj telefona registrovan u banci izdavaocu.</p>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>
