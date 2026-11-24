@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="bs" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Korpa - BHPay</title>
+    <style th:replace="~{fragments/style :: css}"></style>
+</head>
+<body>
+<header class="topbar"><div class="wrap">
+    <a class="logo" href="/"><i></i>BHPay</a>
+    <nav class="nav">
+        <a href="/">Prodavnica</a>
+        <a href="/cart" aria-current="page">Korpa (<span th:text="${cart.totalCount}">0</span>)</a>
+        <a href="/logout">Odjava</a>
+    </nav>
+</div></header>
+
+<main class="wrap shop">
+    <h2>Vaša korpa</h2>
+
+    <div th:if="${#lists.isEmpty(cart.items)}">
+        <p>Korpa je trenutno prazna.</p>
+        <a class="btn" href="/">Nazad na ponudu</a>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(cart.items)}">
+        <table border="1" cellpadding="8" cellspacing="0">
+            <thead>
+            <tr>
+                <th>Proizvod</th>
+                <th>Cijena</th>
+                <th>Količina</th>
+                <th>Ukupno</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${cart.items}">
+                <td th:text="${item.product.name}">Naziv</td>
+                <td><span th:text="${item.product.price}">0.00</span> KM</td>
+                <td th:text="${item.quantity}">1</td>
+                <td><span th:text="${item.subtotal}">0.00</span> KM</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <p><strong>Ukupno za platiti: <span th:text="${cart.totalAmount}">0.00</span> KM</strong></p>
+        <a class="btn" th:href="@{/checkout(productId=${cart.items[0].product.id})}">Nastavi na plaćanje</a>
+        <a class="btn" href="/">Dodaj još proizvoda</a>
+    </div>
+</main>
+</body>
+</html>

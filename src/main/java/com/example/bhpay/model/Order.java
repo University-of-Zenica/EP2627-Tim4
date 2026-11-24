@@ -21,6 +21,13 @@ public class Order {
     @JoinColumn(name = "merchant_id")
     private Merchant merchant;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User customer;
+
+    public User getCustomer() { return customer; }
+    public void setCustomer(User customer) { this.customer = customer; }
+
     private String productName;   // naziv u trenutku kupovine
 
     @Column(nullable = false, precision = 10, scale = 2)
