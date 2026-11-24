@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="bs" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style th:replace="~{fragments/style :: css}"></style>
+    <title>Prijava - BHPay</title>
+</head>
+<body>
+<header class="topbar"><div class="wrap">
+    <a class="logo" href="/"><i></i>BHPay</a>
+    <nav class="nav">
+        <a href="/">Prodavnica</a>
+        <a href="/login" aria-current="page">Prijava</a>
+    </nav>
+</div></header>
+
+<main class="wrap shop" style="max-width: 520px; margin-top: 36px; margin-bottom: 48px;">
+    <div class="tile" style="padding: 28px;">
+        <h2 style="margin-top: 0;">Prijava</h2>
+        <p class="desc" style="margin-bottom: 20px;">Prijavite se na svoj BHPay račun za dodavanje artikala u korpu i plaćanje.</p>
+
+        <p th:if="${message}" th:text="${message}" style="color: #b45309; font-weight: 500; margin-bottom: 14px;"></p>
+        <p th:if="${error}" th:text="${error}" style="color: #dc2626; font-weight: 500; margin-bottom: 14px;"></p>
+
+        <form th:action="@{/login}" method="post" style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-weight: 500;">Email</label>
+                <input type="email" name="email" required style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box;">
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-weight: 500;">Lozinka</label>
+                <input type="password" name="password" required style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box;">
+            </div>
+
+            <button class="btn" type="submit" style="width: 100%; margin-top: 6px;">Prijavi se</button>
+        </form>
+
+        <p style="margin-top: 22px; margin-bottom: 0; text-align: center;">
+            Ako nemate račun, <a th:href="@{/register}" style="font-weight: 700;">registrujte se</a>.
+        </p>
+    </div>
+</main>
+
+<p class="foot">Testno okruženje. Ne unosite prave podatke kartice.</p>
+</body>
+</html>
